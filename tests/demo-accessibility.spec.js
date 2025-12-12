@@ -1,10 +1,13 @@
 const { test, expect } = require('@playwright/test');
 
-// Configure the test to run in visual mode with slow motion
+// Check if running in CI environment (Azure DevOps)
+const isCI = !!process.env.CI;
+
+// Configure the test to run in visual mode with slow motion ONLY on local machine
 test.use({
-  headless: false,
+  headless: isCI, // true in CI (invisible), false locally (visible)
   launchOptions: {
-    slowMo: 2000, // 2 seconds delay per action
+    slowMo: isCI ? 0 : 2000, // No delay in CI, 2s delay locally
   },
 });
 
