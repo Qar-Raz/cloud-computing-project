@@ -1,0 +1,48 @@
+trigger:
+- main
+
+pool:
+  name: 'Default'
+
+steps:
+# 1. Install Node.js
+- task: NodeTool@0
+  inputs:
+    versionSpec: '20.x'
+  displayName: 'Install Node.js'
+
+# 2. Build the Code
+- script: |
+    npm ci
+    npm run build
+  displayName: 'Build Next.js App'
+
+# 3. Install the Robot Browsers
+- script: npx playwright install --with-deps
+  displayName: 'Install Playwright Browsers'
+
+# 4. Run the Robot Tests
+# CHANGED: We now use the specific path to your demo file
+- script: |
+    npm run start &
+    npx wait-on http://localhost:3000
+    npx playwright test tests/demo-order.spec.js
+  displayName: 'Run Playwright Tests'
+  env:
+    CI: 'true'  # This tells your code "We are in the cloud!"
+
+# 5. Zip the Result
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    replaceExistingArchive: true
+
+# 6. Publish the Artifact
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
