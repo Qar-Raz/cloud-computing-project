@@ -4,34 +4,50 @@ trigger:
 pool:
   name: 'Default'
 
+# 1. LINK THE SECRETS LIBRARY
+variables:
+- group: 'Vercel-Deployment-Secrets'
+
 steps:
-# 1. Install Node.js
+# 2. Install Node.js
 - task: NodeTool@0
   inputs:
     versionSpec: '20.x'
   displayName: 'Install Node.js'
 
-# 2. Build the Code
+# 3. Build the Code (Injecting Clerk Keys)
 - script: |
     npm ci
     npm run build
   displayName: 'Build Next.js App'
+  env:
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: $(NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY)
+    CLERK_SECRET_KEY: $(CLERK_SECRET_KEY)
 
-# 3. Install the Robot Browsers
+# 4. Install the Robot Browsers
 - script: npx playwright install --with-deps
   displayName: 'Install Playwright Browsers'
 
-# 4. Run the Robot Tests
-# CHANGED: We now use the specific path to your demo file
+# 5. Run the Robot Tests (Injecting Clerk Keys)
 - script: |
     npm run start &
     npx wait-on http://localhost:3000
     npx playwright test tests/demo-order.spec.js
   displayName: 'Run Playwright Tests'
   env:
-    CI: 'true'  # This tells your code "We are in the cloud!"
+    CI: 'true'
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: $(NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY)
+    CLERK_SECRET_KEY: $(CLERK_SECRET_KEY)
 
-# 5. Zip the Result
+# 6. Deploy to Vercel (Only runs if tests pass)
+- script: |
+    npx vercel --prod --token=$(VERCEL_TOKEN) --yes
+  displayName: 'Deploy to Vercel'
+  env:
+    VERCEL_ORG_ID: $(VERCEL_ORG_ID)
+    VERCEL_PROJECT_ID: $(VERCEL_PROJECT_ID)
+
+# 7. Zip the Result (Optional: Only if you still want the artifact in Azure)
 - task: ArchiveFiles@2
   inputs:
     rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
@@ -40,7 +56,7 @@ steps:
     archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
     replaceExistingArchive: true
 
-# 6. Publish the Artifact
+# 8. Publish the Artifact (Optional)
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
