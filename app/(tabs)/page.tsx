@@ -13,6 +13,14 @@ import { useAccessibility } from '@/lib/accessibility-context';
 import { useLocation } from '@/lib/location-context';
 import { ToastContainer, ToastMessage } from '@/components/ui/Toast';
 
+// -----------------------------------------------------------------------------
+// DEMO CONFIGURATION
+// Change this value to 'green' to switch the entire landing page theme.
+// This is useful for demonstrating deployment changes.
+// Options: 'orange' | 'green'
+const DEMO_THEME: 'orange' | 'green' = 'green'; 
+// -----------------------------------------------------------------------------
+
 export default function Home() {
     const router = useRouter();
     const { t } = useTranslation();
@@ -28,6 +36,9 @@ export default function Home() {
     const [announceMessage, setAnnounceMessage] = useState('');
     const [isListening, setIsListening] = useState(false);
     const recognitionRef = useRef<any>(null);
+    
+    // Derived from the constant at the top of the file
+    const isGreenMode = DEMO_THEME === 'green';
 
     // Scroll to all restaurants section
     const scrollToRestaurants = () => {
@@ -175,7 +186,7 @@ export default function Home() {
         }${selectedCuisine ? ` in ${selectedCuisine}` : ''}`;
 
     return (
-        <div className="min-h-screen bg-linear-to-b from-[#F8F9FA] to-[#E9ECEF]">
+        <div className={`min-h-screen bg-linear-to-b ${isGreenMode ? 'from-green-50 to-green-100' : 'from-[#F8F9FA] to-[#E9ECEF]'}`}>
             {/* Skip to main content link for accessibility */}
             <a
                 href="#main-content"
@@ -207,7 +218,7 @@ export default function Home() {
                         <div className="flex items-center gap-3">
                             <div className="relative group">
                                 {/* Logo Circle with Gradient */}
-                                <div className="w-11 h-11 bg-linear-to-br from-[#FF6B00] via-[#FF7A1F] to-[#FF8C3A] rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 transform group-hover:scale-105 relative overflow-hidden">
+                                <div className={`w-11 h-11 bg-linear-to-br ${isGreenMode ? 'from-green-500 via-green-600 to-green-700' : 'from-[#FF6B00] via-[#FF7A1F] to-[#FF8C3A]'} rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 transform group-hover:scale-105 relative overflow-hidden`}>
                                     {/* Animated shine effect */}
                                     <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
                                     {/* Icon */}
@@ -217,7 +228,7 @@ export default function Home() {
                                 <div className="absolute -inset-1 bg-linear-to-br from-[#FF6B00]/20 to-[#FF8C3A]/20 rounded-2xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"></div>
                             </div>
                             <div>
-                                <h1 className="text-lg font-bold bg-linear-to-r from-[#FF6B00] to-[#FF8C3A] bg-clip-text text-transparent leading-none">
+                                <h1 className={`text-lg font-bold bg-linear-to-r ${isGreenMode ? 'from-green-600 to-green-800' : 'from-[#FF6B00] to-[#FF8C3A]'} bg-clip-text text-transparent leading-none`}>
                                     {t('home.title')}
                                 </h1>
                                 <p className="text-[10px] text-[#6C757D] font-medium">{t('home.subtitle')}</p>
@@ -231,7 +242,7 @@ export default function Home() {
                                 className="flex items-center gap-2 group hover:opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:ring-offset-2 rounded-lg p-1.5 -m-1.5"
                                 aria-label={`Your location: ${currentAddress}. Click to change location`}
                             >
-                                <div className="p-1.5 bg-linear-to-br from-[#FF6B00] to-[#FF8C3A] rounded-lg shadow-sm group-hover:shadow-md transition-all duration-300" aria-hidden="true">
+                                <div className={`p-1.5 bg-linear-to-br ${isGreenMode ? 'from-green-500 to-green-700' : 'from-[#FF6B00] to-[#FF8C3A]'} rounded-lg shadow-sm group-hover:shadow-md transition-all duration-300`} aria-hidden="true">
                                     <MapPin size={16} className="text-white" />
                                 </div>
                                 <div className="text-left hidden sm:block">
@@ -270,7 +281,7 @@ export default function Home() {
                                 onKeyDown={handleSearchSubmit}
                                 onFocus={() => setIsSearchFocused(true)}
                                 onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
-                                icon={<Search size={20} className="text-[#FF6B00]" aria-hidden="true" />}
+                                icon={<Search size={20} className={isGreenMode ? "text-green-600" : "text-[#FF6B00]"} aria-hidden="true" />}
                                 aria-describedby={searchQuery ? 'search-hint' : undefined}
                                 aria-autocomplete="list"
                                 className="pr-12"
@@ -279,7 +290,7 @@ export default function Home() {
                                 onClick={isListening ? stopVoiceSearch : startVoiceSearch}
                                 className={`absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[#FF6B00] focus:ring-offset-2 ${isListening
                                     ? 'bg-red-500 text-white hover:bg-red-600 animate-pulse'
-                                    : 'bg-gray-100 text-[#FF6B00] hover:bg-[#FF6B00] hover:text-white'
+                                    : `bg-gray-100 ${isGreenMode ? 'text-green-600 hover:bg-green-600' : 'text-[#FF6B00] hover:bg-[#FF6B00]'} hover:text-white`
                                     }`}
                                 aria-label={isListening ? 'Stop voice search' : 'Start voice search'}
                                 title={isListening ? 'Stop voice search' : 'Start voice search'}
@@ -367,7 +378,7 @@ export default function Home() {
                 {/* Enhanced Promotional Banner - SUPER BEAUTIFUL */}
                 <section
                     onClick={scrollToRestaurants}
-                    className="relative h-52 md:h-56 bg-linear-to-br from-[#FF6B00] via-[#FF5722] to-[#E64A19] rounded-3xl overflow-hidden shadow-2xl group cursor-pointer transform hover:scale-[1.02] hover:shadow-[0_25px_60px_-12px_rgba(255,107,0,0.5)] transition-all duration-500"
+                    className={`relative h-52 md:h-56 bg-linear-to-br ${isGreenMode ? 'from-green-500 via-green-600 to-green-700' : 'from-[#FF6B00] via-[#FF5722] to-[#E64A19]'} rounded-3xl overflow-hidden shadow-2xl group cursor-pointer transform hover:scale-[1.02] ${isGreenMode ? 'hover:shadow-[0_25px_60px_-12px_rgba(34,197,94,0.5)]' : 'hover:shadow-[0_25px_60px_-12px_rgba(255,107,0,0.5)]'} transition-all duration-500`}
                     aria-labelledby="promo-heading"
                     role="button"
                     tabIndex={0}
@@ -435,7 +446,7 @@ export default function Home() {
                                     e.stopPropagation();
                                     scrollToRestaurants();
                                 }}
-                                className="mt-2 bg-white text-[#FF6B00] px-6 md:px-8 py-2.5 md:py-3 rounded-xl font-extrabold hover:bg-yellow-50 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 flex items-center gap-2 focus:outline-none focus:ring-4 focus:ring-white/50 text-sm md:text-base group/btn"
+                                className={`mt-2 bg-white ${isGreenMode ? 'text-green-600' : 'text-[#FF6B00]'} px-6 md:px-8 py-2.5 md:py-3 rounded-xl font-extrabold hover:bg-yellow-50 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 flex items-center gap-2 focus:outline-none focus:ring-4 focus:ring-white/50 text-sm md:text-base group/btn`}
                                 aria-label="Order now and get 30% off your first order"
                             >
                                 <Zap size={18} className="text-[#FF6B00] group-hover/btn:animate-pulse" />
