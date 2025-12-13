@@ -18,7 +18,7 @@ import { ToastContainer, ToastMessage } from '@/components/ui/Toast';
 // Change this value to 'green' to switch the entire landing page theme.
 // This is useful for demonstrating deployment changes.
 // Options: 'orange' | 'green'
-const DEMO_THEME: 'orange' | 'green' = 'green'; 
+const DEMO_THEME: 'orange' | 'green' = 'orange'; 
 // -----------------------------------------------------------------------------
 
 export default function Home() {
